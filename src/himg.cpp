@@ -1,7 +1,6 @@
 //
 // Adaptive hp-FEM for images
 //
-
 #include "himg.h"
 
 #include "shared/bitmap.h"
@@ -18,17 +17,11 @@ using namespace RefinementSelectors;
 
 /***** Global variables *****/ 
 Parameters params; ///< HIMG input parameters.
+Image2dExtrapolated image;  ///< An input image. Stored as a global variable due to the definition of the exact solution.
+PixByPixInt pix_by_pix_int(&image); ///< A pixel-by-pixel integrator used for projections and error evaluation
 
-/***** Crappy global variables *****/
-Solution sln_coarse;
-Solution sln_finer;
-
-/***** Image and integration *****/
-#define PALETE_LEN 256
-Image2dExtrapolated image;  ///< Input image
-float image_value_min, image_value_max; ///< A range of values in image
-float grayScalePalette[PALETE_LEN + 1][3];
-PixByPixInt pix_by_pix_int(&image); ///< Pixel by pixel integration used for projections and error evaluation
+OrderView oview("PolyOrders", 420, 0, 400, 400); ///< An order view.
+ScalarView sview("Solution"); ///< A scalar view.
 
 // function returning values and derivatives of the continuous image representation
 double get_image_sample(double x, double y, double &dx, double &dy)
@@ -84,13 +77,12 @@ scalar linear_form(int point_cnt, double *weights, Func<double> *values_v, Geom<
 }
 
 Ord linear_form(int point_cnt, double *weights, Func<Ord> *values_v, Geom<Ord> *geometry, ExtData<Ord> *values_fnc_ext, Element* element, Shapeset* shape_set, int shape_inx) {
-  return Ord(std::max(image.get_interpolation_h_order(), image.get_interpolation_v_order()));
+  return Ord(image.get_interpolation_h_order() + image.get_interpolation_v_order());
 }
 
 /****** Initialization ******/
-/* initializes image */
-bool init_image(const char* filename, Image2d& image, float& image_value_min, float& image_value_max)
-{
+/// Initializes an image.
+bool init_image(const char* filename, Image2d& image) {
   //load image
   trace("Loading image \"%s\".", filename);
   Bitmap bmp;
@@ -101,23 +93,11 @@ bool init_image(const char* filename, Image2d& image, float& image_value_min, fl
   // convert to gray scale
   image.create_from_intensity(&bmp);
 
-  // calculate range min/max
-  image.calculate_range(&image_value_min, &image_value_max);
-
-  // prepare grayscale palette for displaying the result (grayscale for now)
-  for (int i = 0; i < PALETE_LEN; i++) {
-    float val = i / (float) PALETE_LEN;
-    grayScalePalette[i][0] = val;
-    grayScalePalette[i][1] = val;
-    grayScalePalette[i][2] = val;
-  }
-
   return true;
 }
 
-/* initializes mesh */
-bool init_mesh(Image2d& image, Mesh& mesh)
-{
+/// Initializes a mesh.
+bool init_mesh(Image2d& image, Mesh& mesh) {
   int mesh_width = image.get_width(), mesh_height = image.get_height(); 
   int vertex_num = 4, tria_num = 0, quad_num = 1, marker_num = 4;
   double2 vertex_array[4] = {{0, 0}, {mesh_width, 0}, {mesh_width, mesh_height}, {0, mesh_height}};
@@ -129,25 +109,19 @@ bool init_mesh(Image2d& image, Mesh& mesh)
   return true;
 }
 
-/* print info */
-void print_info()
-{
+/// Prints info.
+void print_info() {
   params.report_settings();
 }
 
-/***** Visualization *****/
-OrderView oview("PolyOrders", 420, 0, 400, 400);
-ScalarView sview("Fine mesh");
-
-/* init_viewers */
+/// Initialized viewers.
 bool init_viewers() {
   sview.set_palette(H2DV_PT_GRAYSCALE); 
   return true;
 }
 
-/* visualize */
+/// Visualizes the result.
 void visualize(int iteration, Space& space, Solution& sln_coarse) {
-
   trace("Visualization and data backup");
   stringstream sview_str;
   sview_str << "Solution after iter " << iteration;
@@ -162,13 +136,13 @@ void visualize(int iteration, Space& space, Solution& sln_coarse) {
 
 /***** Major functions *****/
 
-/* initializes the system */
+/// Initializes computation.
 bool do_init(Mesh** mesh_out, H1Space** space_out, H1Shapeset** shapeset_out, WeakForm** wf_out) {
   srand(0);
 
   //initialize mesh
   Mesh* mesh = new Mesh();
-  if (!init_image(params.image_filename.c_str(), image, image_value_min, image_value_max))
+  if (!init_image(params.image_filename.c_str(), image))
     return false;
   if (!init_viewers())
     return false;
@@ -196,7 +170,7 @@ bool do_init(Mesh** mesh_out, H1Space** space_out, H1Shapeset** shapeset_out, We
   return true;
 }
 
-/* cleanup */
+/// Cleans resources.
 void do_cleanup(Mesh* mesh, H1Space* space, H1Shapeset* shapeset, WeakForm* wf) {
   if (wf != NULL)
     delete wf;
@@ -208,11 +182,12 @@ void do_cleanup(Mesh* mesh, H1Space* space, H1Shapeset* shapeset, WeakForm* wf) 
     delete mesh;
 }
 
-/* process */
+/// Processes an image. Main processing loop.
 void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& wf) {
   //prepare structures
   PrecalcShapeset pss(&shapeset);
   UmfpackSolver solver;
+  Solution sln_coarse;
 
   //initialize selector
   H1ImageProjBasedSelector selector(&pix_by_pix_int, params.cand_list, params.conv_exp, H2DRS_DEFAULT_ORDER, &shapeset);
@@ -220,17 +195,6 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
   //set weights to equal, otherwise it will try to increase order too much
   selector.set_error_weights(1.0, 1.0, 1.0);
   
-  ////load
-  //H1AdaptImage hp(&pix_by_pix_int, &space);
-  //ElementToRefineStream stream("wires512.ppm.ers", ios_base::in | ios_base::binary);
-  //for(int i = 0; i < 28; i++) {
-  //  vector<ElementToRefine> refinements;
-  //  stream >> refinements;
-  //  hp.apply_refinements(refinements);
-  //}
-  //stream.close();
-  //space.assign_dofs();
-
   //adaptivity refinement
   TimePeriod cpu_time;
   TimeStatistics timing;
@@ -293,9 +257,9 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
     //store timing since this iteration is done (adaptivity belongs to the next iteration)
     store_timing(iteration, params.image_filename.c_str(), timing);
 
-    ////visualize
-    //visualize(iteration, space, sln_coarse);
-    //View::wait(H2DV_WAIT_KEYPRESS);
+    //visualize
+    if (!params.no_visualization)
+      visualize(iteration, space, sln_coarse);
 
     //adaptivity step
     trace("Adaptivity step.");
@@ -327,12 +291,11 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
   View::wait();
 }
 
-/***** Main *****/
-int main(int argc, char *argv[])
-{
+/// Main entry point.
+int main(int argc, char *argv[]) {
   cout << "-------------------------------------------------" << endl;
   cout << "        We are HIMG. Resistance is futile.       " << endl;
-  cout << "  Pavel Solin & David Andrs & Ivo Hanak, 2009.   " << endl;
+  cout << "  Pavel Solin & David Andrs & Ivo Hanak, 2010.   " << endl;
   cout << "-------------------------------------------------" << endl;
 
   // parse command line and print settings

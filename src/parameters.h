@@ -1,5 +1,5 @@
-#ifndef __PARAMETERS_H
-#define __PARAMETERS_H
+#ifndef HIMG_PARAMETERS_H
+#define HIMG_PARAMETERS_H
 
 /* Adaptivity types */
 #define ADAPT_TYPE_HP 0
@@ -12,6 +12,8 @@ struct Parameters
 {
 public:
   std::string image_filename;	///< file name of the image to process
+
+  bool no_visualization; ///< True if there should be no visualization.
 
   int initial_poly_degree; ///< initial polynomial degree of elements
 

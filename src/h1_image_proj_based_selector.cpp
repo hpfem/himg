@@ -26,10 +26,9 @@ void H1ImageProjBasedSelector::create_candidates(Element* e, int quad_order, int
   }
 }
 
-
-scalar H1ImageProjBasedSelector::evaluate_rsh_sub_element(Element* sub_elem, const ElemGIP& sub_gip, const ElemSubTrf& sub_trf, int shape_inx) {
-  const int quad_order = shapeset->get_order(shape_inx);
-  EvalRHSParams rhs_params = { sub_trf, shapeset, shape_inx };
+scalar H1ImageProjBasedSelector::evaluate_rhs_subdomain(Element* sub_elem, const ElemGIP& sub_gip, const ElemSubTrf& sub_trf, const ElemSubShapeFunc& sub_shape) {
+  const int quad_order = shapeset->get_order(sub_shape.inx);
+  EvalRHSParams rhs_params = { sub_trf, shapeset, sub_shape.inx };
   double rsh = pix_by_pix_int->integrate_element(sub_elem, H2D_GET_H_ORDER(quad_order), H2D_GET_V_ORDER(quad_order), eval_right_side, &rhs_params, false);
   return rsh;
 }
@@ -55,7 +54,7 @@ double H1ImageProjBasedSelector::eval_right_side(const Vector2D& sub_ref, const 
   return (img_value * shape_value) + (img_dx * shape_dx) + (img_dy * shape_dy);
 }
 
-double H1ImageProjBasedSelector::evaluate_error_sub_element(Element* sub_elem, const ElemGIP& sub_gip, const ElemSubTrf& sub_trf, const ElemProj& elem_proj) {
+double H1ImageProjBasedSelector::evaluate_error_squared_subdomain(Element* sub_elem, const ElemGIP& sub_gip, const ElemSubTrf& sub_trf, const ElemProj& elem_proj) {
   EvalProjErrorParams proj_error_params = { sub_trf, shapeset, elem_proj };
   double error = pix_by_pix_int->integrate_element(sub_elem, H2D_GET_H_ORDER(elem_proj.max_quad_order), H2D_GET_V_ORDER(elem_proj.max_quad_order), eval_proj_error, &proj_error_params, false);
   return error;
