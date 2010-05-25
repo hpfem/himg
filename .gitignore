@@ -13,6 +13,7 @@
 *.eps
 *.gp
 tutorial.*
+*.txt
 *.png
 *.bmp
 *.user
@@ -27,6 +28,9 @@ CMake.vars
 *.dat
 *.log
 *.mat
+*.svg
+*.csv
+*.ers
 
 # CMake generated files/dirs
 src/config.h
