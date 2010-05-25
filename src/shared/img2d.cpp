@@ -124,21 +124,23 @@ bool Image2d::create_from_png(const char* filename) {
   }
 
   //read lines (store mirrored along the Y-axis)
-  float* tgt_row = data + (height - 1)*width;
-  for(int i = 0; i < (int)dy; i++, tgt_row -= width) {
-    //read row
-  	png_read_row(png_ptr, row, NULL);
+  {
+    float* tgt_row = data + (height - 1)*width;
+    for(int i = 0; i < (int)dy; i++, tgt_row -= width) {
+      //read row
+      png_read_row(png_ptr, row, NULL);
 
-    //decode row
-    if (bytes_per_value == 1) { //8-bit
-      unsigned char* src_row = (unsigned char*)row;
-      for(int k = 0; k <(int)dx; k++)
-        tgt_row[k] = src_row[k] / 255.0f;
-    }
-    else { //16-bit
-      unsigned short* src_row = (unsigned short*)row;
-      for(int k = 0; k <(int)dx; k++)
-        tgt_row[k] = src_row[k] / 65535.0f;
+      //decode row
+      if (bytes_per_value == 1) { //8-bit
+        unsigned char* src_row = (unsigned char*)row;
+        for(int k = 0; k <(int)dx; k++)
+          tgt_row[k] = src_row[k] / 255.0f;
+      }
+      else { //16-bit
+        unsigned short* src_row = (unsigned short*)row;
+        for(int k = 0; k <(int)dx; k++)
+          tgt_row[k] = src_row[k] / 65535.0f;
+      }
     }
   }
 
@@ -325,24 +327,26 @@ void Image2d::store_to_png_clamped(const char* filename, float range_min, float 
 		png_set_swap(png_ptr); 
 
   //store rows
-  float range_length = range_max - range_min;
-  if (range_length == 0)
-    range_length = 0.0f;
-  float* row = data + (height-1) * width;
-  for(int i = 0; i < height; i++, row -= width) {
-    //convert
-    for(int k = 0; k < width; k++) {
-      float value = row[k];
-      if (value > range_max)
-        image_row[k] = 0xFFFF;
-      else if (value < range_min)
-        image_row[k] = 0;
-      else 
-        image_row[k] = (unsigned short)floor(65535.0f * (value - range_min) / range_length);
-    }
+  {
+    float range_length = range_max - range_min;
+    if (range_length == 0)
+      range_length = 0.0f;
+    float* row = data + (height-1) * width;
+    for(int i = 0; i < height; i++, row -= width) {
+      //convert
+      for(int k = 0; k < width; k++) {
+        float value = row[k];
+        if (value > range_max)
+          image_row[k] = 0xFFFF;
+        else if (value < range_min)
+          image_row[k] = 0;
+        else 
+          image_row[k] = (unsigned short)floor(65535.0f * (value - range_min) / range_length);
+      }
 
-    //store
-    png_write_row(png_ptr, (png_bytep)image_row);
+      //store
+      png_write_row(png_ptr, (png_bytep)image_row);
+    }
   }
 
   //finish

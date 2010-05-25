@@ -258,7 +258,7 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
     store_timing(iteration, params.image_filename.c_str(), timing);
 
     //visualize
-    if (!params.no_visualization)
+    if (params.visualize)
       visualize(iteration, space, sln_coarse);
 
     //adaptivity step

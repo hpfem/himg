@@ -21,7 +21,7 @@ static void store_solution_vector(const char* input_name, const int iteration, c
   sprintf(buffer, FILENAME_SLN_VECTOR, input_name);
 
   //determine open mode
-  ios_base::open_mode mode = 0;
+  ios_base::openmode mode = (ios_base::openmode)0;
   if (iteration == HIMG_FIRST_ITERATION)
     mode = ios_base::out;
   else
@@ -56,14 +56,14 @@ static void store_refinements(const char* input_name, const int iteration, const
   out_fname << input_name << ".ers";
 
   //determine open mode
-  ios_base::open_mode mode = 0;
+  ios_base::open_mode mode = (ios_base::openmode)0;
   if (iteration == HIMG_FIRST_ITERATION)
     mode = ios_base::out;
   else
     mode = ios_base::app;
 
   //open
-  ElementToRefineStream fout(out_fname.str().c_str(), mode | ios_base::binary);
+  ElementToRefineStream fout(out_fname.str().c_str(), (ios_base::openmode)(mode | ios_base::binary));
   error_if(!fout.is_open(), "Unable to access refinement stream \"%s\".", out_fname.str().c_str());
 
   //write

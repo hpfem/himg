@@ -111,7 +111,8 @@ void Bitmap::LoadFromFile(const char *fileName)
       values[i] = (unsigned char)((val * 255) / maxRange);
     }
 
-	  fclose(img);
+    //close file
+    fclose(img); img = NULL;
 
     // clean the class
     delete[] this->Data;
@@ -120,9 +121,6 @@ void Bitmap::LoadFromFile(const char *fileName)
 	  Width = wd;
 	  Height = ht;
 	  Data = data;
-
-    //close
-    fclose(img);
   }
   catch (std::runtime_error& err) {
     if (img != NULL)
@@ -136,7 +134,7 @@ void Bitmap::LoadFromFile(const char *fileName)
 bool Bitmap::SaveToFile(const char *fileName)
 {
   FILE *file = NULL;
-  char* err_message = NULL;
+  std::string err_message;
 
   //check the contents
   if (Data == NULL) { err_message = "E bitmap is not initialized\n"; goto error; };
@@ -161,7 +159,8 @@ bool Bitmap::SaveToFile(const char *fileName)
 error:
   if (file != NULL)
     fclose(file);
-  fprintf(stderr, err_message);
+  if (!err_message.empty())
+    fprintf(stderr, "%s", err_message.c_str());
   return false;
 }
 

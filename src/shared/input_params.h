@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include <exception>
+#include <stdexcept>
  
 /// Exception of input parameters
 class InputParamsError : public std::runtime_error {

@@ -14,7 +14,7 @@ void Parameters::set_defaults(InputParams& input) {
   input.set_default("ipoly", 1);
   input.set_default("mr", -1);
   input.set_default("ce", 1.0);
-  input.set_default("novis", false);
+  input.set_default("vis", false);
 }
 
 void Parameters::load(InputParams& input) {
@@ -26,7 +26,7 @@ void Parameters::load(InputParams& input) {
   initial_poly_degree = input.get_int32("ipoly");
   mesh_regularity = input.get_int32("mr");
   conv_exp = input.get_double("ce");
-  no_visualization = input.get_bool("novis");
+  visualize = input.get_bool("vis");
 
   CandList used_cand_lists[] = { H2D_H_ISO, H2D_H_ANISO, H2D_P_ISO, H2D_P_ANISO, H2D_HP_ISO, H2D_HP_ANISO_H, H2D_HP_ANISO_P, H2D_HP_ANISO };
   string cand_list_str = input.get_string("cl");
@@ -85,5 +85,5 @@ void Parameters::print_legend() {
   cout << "  -mr X              a mesh regularity" << endl;
   cout << "  -ce X              a convergence exponent" << endl;
   cout << "  -cl X              a candidate list (HP_ANISO is the default)" << endl;
-  cout << "  -novis             avoid visualization" << endl;
+  cout << "  -vis true          enable visualization" << endl;
 }

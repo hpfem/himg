@@ -13,7 +13,7 @@ struct Parameters
 public:
   std::string image_filename;	///< file name of the image to process
 
-  bool no_visualization; ///< True if there should be no visualization.
+  bool visualize; ///< True if visualization is enabled.
 
   int initial_poly_degree; ///< initial polynomial degree of elements
 

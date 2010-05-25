@@ -1,4 +1,5 @@
 #include <sstream>
+#include <stdio.h>
 #include "input_params.h"
 
 using namespace std;
@@ -63,7 +64,7 @@ const int InputParams::get_int32(const char* key) const {
 const double InputParams::get_double(const char* key) const {
   const string& str_value = get_string(key);
   double value = 0;
-  if (sscanf(str_value.c_str(), "%Lf", &value) == 1)
+  if (sscanf(str_value.c_str(), "%lf", &value) == 1)
     return value;
   else {
     stringstream s;
@@ -85,9 +86,9 @@ const bool InputParams::get_bool(const char* key, const bool needs_definition) c
     }
 
     //compare
-    if (strcmp(str_low_value.str().c_str(), "true") == 0)
+    if (str_low_value.str().compare("true") == 0)
       return true;
-    else if (strcmp(str_low_value.str().c_str(), "false") == 0)
+    else if (str_low_value.str().compare("false") == 0)
       return false;
     else {
       stringstream s;
