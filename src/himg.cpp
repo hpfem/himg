@@ -30,7 +30,7 @@ double get_image_sample(double x, double y, double &dx, double &dy)
 }
 
 /***** Boundary conditions for Hermes *****/
-int bc_mesh_1(int marker) {
+BCType bc_mesh_1(int marker) {
   return BC_NONE;
 }
 

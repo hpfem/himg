@@ -24,6 +24,7 @@ endif(EXISTS ${PROJECT_SOURCE_DIR}/CMake.vars)
 # end of configuration section
 #---------------------------------------------------------
 
+find_package(HERMES_COMMON REQUIRED)
 find_package(HERMES2D REQUIRED)
 find_package(UMFPACK REQUIRED)
 find_package(LIBPNG REQUIRED)

@@ -14,7 +14,8 @@ add_executable(${PROJECT_NAME} ${SRC})
 
 # include directories
 include_directories(${UMFPACK_INCLUDE_DIR} ${AMD_INCLUDE_DIR})
-include_directories(${HERMES2D_INCLUDE_DIR})
+include_directories(${HERMES2D_INCLUDE_DIR} ${HERMES_COMMON_INCLUDE_DIR}
+${PYTHON_INCLUDE_DIR})
 include_directories(${LIBPNG_INCLUDE_DIR})
 
 # linking

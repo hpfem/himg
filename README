@@ -16,6 +16,7 @@ Installation Instructions (Linux/*nix)
 	- ``HERMES2D_ROOT``: A path to a folder containing an installed library Hermes2D. Use if the library Hermes2D is installed in a specific folder. The system assumes a sub-folder ``include``, which contains header files, and a sub-folder ``lib``, which contains library files. Ignore, otherwise.
 	- ``HERMES2D_SOURCE_ROOT``: A path to a folder containing source code (including header files) of the library Hermes2D. This variable can be ignored if the variable ``HERMES2D_ROOT`` is used.
 	- ``HERMES2D_LIBRARY_ROOT``: A path to a folder containing library files of the library Hermes2D. If not installed, the path is equal to ``HERMES2D_SOURCE_ROOT``, i.e., use ``set(HERMES2D_LIBRARY_ROOT ${HERMES2D_SOURCE_ROOT})``. This variable can be ignored if the variable ``HERMES2D_ROOT`` is used.
+	- ``HERMES_COMMON_ROOT``: A path to a folder containing the library Hermes_common. Usually, it is a sub-folder of the library Hermes2D.
 	
  4. Run CMAKE: ``cmake .``
  5. Compile using MAKE: ``make``
@@ -40,6 +41,7 @@ Installation Instructions (MSVC)
 	- ``HERMES2D_ROOT``: A path to a folder containing an installed library Hermes2D. Use if the library Hermes2D is installed in a specific folder. The system assumes a sub-folder ``include``, which contains header files, and a sub-folder ``lib``, which contains library files.
 	- ``HERMES2D_SOURCE_ROOT``: A path to a folder containing a source code (including header files) of the library Hermes2D. Not necessary if the library was installed and it is accessible either at a standard path or at a path defined by the variable ``HERMES2D_ROOT``. Nevertheless, it is more comfortable to set this variable to a src/ folder of the library Hermes2D rather than installing the library.
 	- ``HERMES2D_LIBRARY_ROOT``: A path to a folder containing library files (i.e. .lib) of the library Hermes2D. Set it to the folder in which the files .LIB are generated, e.g., use ``set(HERMES2D_LIBRARY_ROOT "my_hermes2d_root/src/Debug")``.
+	- ``HERMES_COMMON_ROOT``: A path to a folder containing the library Hermes_common. Usually, it is a sub-folder of the library Hermes2D.
 	- ``UMFPACK_ROOT``: Use ``set(UMFPACK_ROOT ${DEP_ROOT})``.
 	- ``AMD_ROOT``: Use ``set(AMD_ROOT ${DEP_ROOT})``.
 	- ``LIBPNG_ROOT``: Use ``set(LIBPNG_ROOT ${DEP_ROOT})``. If the library libpng was installed elsewhere, use an appropriate path. The script assumes that the path contains a sub-folder 'include' and a sub-folder 'lib'.
