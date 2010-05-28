@@ -155,12 +155,12 @@ bool do_init(Mesh** mesh_out, H1Space** space_out, H1Shapeset** shapeset_out, We
   //prepare space
   space->set_bc_types(bc_mesh_1);
   space->set_uniform_order(params.initial_poly_degree);
-  space->assign_dofs();  // enumerate basis functions
+  assign_dofs(space);  // enumerate basis functions
 
   // initialize the weak formulation
   WeakForm* wf = new WeakForm(1);
-  wf->add_biform(0, 0, bilinear_form, bilinear_form, H2D_SYM);
-  wf->add_liform(0, linear_form, linear_form, 0, H2D_ANY);
+  wf->add_biform(bilinear_form, bilinear_form, H2D_SYM);
+  wf->add_liform(linear_form, linear_form, 0, H2D_ANY);
 
   // return data
   *mesh_out = mesh;
@@ -208,10 +208,10 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
     trace("Assembling and solving.");
     cpu_time.tick(H2D_SKIP);
     LinSystem sys(&wf, &solver);
-    sys.set_spaces(1, &space);
-    sys.set_pss(1, &pss);
+    sys.set_space(&space);
+    sys.set_pss(&pss);
     sys.assemble();
-    sys.solve(1, &sln_coarse);
+    sys.solve(&sln_coarse);
     timing.solving = cpu_time.tick().last();
 
     // build reference solution
@@ -274,11 +274,11 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
       if (not_refined) {
         not_refined = true;
       }
-      int ndofs = space.assign_dofs();
+      int ndof = assign_dofs(&space);
       timing.adaptivity = timing_err_calculation + cpu_time.tick().last(); //adaptivity counts to the next step (adaptivity that cuased the step)
       refinements = hp.get_last_refinements();
 
-      if (params.max_ndof > 0 && ndofs >= params.max_ndof)
+      if (params.max_ndof > 0 && ndof >= params.max_ndof)
       {
         verbose("Done due to reaching of the maximum DOF.");
         done = true;
@@ -293,10 +293,12 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
 
 /// Main entry point.
 int main(int argc, char *argv[]) {
-  cout << "-------------------------------------------------" << endl;
-  cout << "        We are HIMG. Resistance is futile.       " << endl;
-  cout << "  Pavel Solin & David Andrs & Ivo Hanak, 2010.   " << endl;
-  cout << "-------------------------------------------------" << endl;
+  cout << "--------------------------------------------------------" << endl;
+  cout << "   HIMG: an experimental image compression code based   " << endl;
+  cout << " on adaptive higher-order FEM.  Developed by the hp-FEM " << endl;
+  cout << "   group at UNR and distributed under the GPL license.  " << endl;
+  cout << "          For details visit http://hpfem.org/.          " << endl;
+  cout << "--------------------------------------------------------" << endl;
 
   // parse command line and print settings
   try {
