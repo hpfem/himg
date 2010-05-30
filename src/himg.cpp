@@ -195,14 +195,17 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
   //set weights to equal, otherwise it will try to increase order too much
   selector.set_error_weights(1.0, 1.0, 1.0);
   
+  // DOF convergence graph.
+  SimpleGraph graph_dof;
+
   //adaptivity refinement
   TimePeriod cpu_time;
   TimeStatistics timing;
   std::vector<ElementToRefine> refinements;
-  int iteration = HIMG_FIRST_ITERATION;
+  int as = HIMG_FIRST_ITERATION;
   bool done = false;
   do {
-    info("!---- Adaptivity step %d ---------------------------------------------", iteration);
+    info("---- Adaptivity step %d:", as);
 
     // build the coarse solution
     trace("Assembling and solving.");
@@ -235,37 +238,43 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
     cpu_time.tick(H2D_SKIP);
     H1AdaptImage hp(&pix_by_pix_int, &space);
     hp.set_solutions(&sln_coarse, &sln_exact);
-    double err_h1 = hp.calc_error();
+    double err_h1 = hp.calc_error() * 100;
     double err_mse = Image2d::evaluate_mse(image, image_sln);
     double err_mad = Image2d::evaluate_mad(image, image_sln);
     double err_sigma = Image2d::evaluate_sigma(image, image_sln);
     double timing_err_calculation = cpu_time.tick().last(); //time is used in the next iteration because it calculates data for adaptivity
-    verbose("H1 error estimation: %g", err_h1);
+    verbose("ndof: %d", space.get_num_dofs());
+    verbose("H1 error estimate: %g%%", err_h1);
     verbose("MSE: %g", err_mse);
     verbose("MAD: %g", err_mad);
-    verbose("sigma: %g", err_sigma);
+    verbose("Sigma: %g", err_sigma);
+
+    //add entry to DOF convergence graph.
+    graph_dof.add_values(space.get_num_dofs(), err_h1);
+    graph_dof.save("conv_dof.dat");
+
 
     //store result
     trace("Storing results.");
-    store_error_estimate(iteration, params.image_filename.c_str(), err_h1, err_mse, err_mad, err_sigma, space.get_num_dofs());
+    store_error_estimate(as, params.image_filename.c_str(), err_h1, err_mse, err_mad, err_sigma, space.get_num_dofs());
     vector<double> sln_vector;
     sys.get_solution_vector(sln_vector);
-    store_adaptivity_step(params.image_filename.c_str(), iteration,
+    store_adaptivity_step(params.image_filename.c_str(), as,
       &space, image_sln, image.get_width(), image.get_height(),
       sln_vector, refinements, timing);
 
     //store timing since this iteration is done (adaptivity belongs to the next iteration)
-    store_timing(iteration, params.image_filename.c_str(), timing);
+    store_timing(as, params.image_filename.c_str(), timing);
 
     //visualize
     if (params.visualize)
-      visualize(iteration, space, sln_coarse);
+      visualize(as, space, sln_coarse);
 
     //adaptivity step
     trace("Adaptivity step.");
     if (err_sigma < params.stop_error) 
     {
-      verbose("Done due to an SIGMA below threshold.");
+      verbose("Stopped due to Sigma below threshold.");
       done = true;
     }
     else {
@@ -280,12 +289,12 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
 
       if (params.max_ndof > 0 && ndof >= params.max_ndof)
       {
-        verbose("Done due to reaching of the maximum DOF.");
+        verbose("Stopped as maximum number of DOF reached.");
         done = true;
       }
     }
 
-    iteration++;
+    as++;
   } while (!done);
 
   View::wait();
@@ -293,12 +302,15 @@ void do_adaptivity(Mesh& mesh, H1Space& space, H1Shapeset& shapeset, WeakForm& w
 
 /// Main entry point.
 int main(int argc, char *argv[]) {
-  cout << "--------------------------------------------------------" << endl;
-  cout << "   HIMG: an experimental image compression code based   " << endl;
-  cout << " on adaptive higher-order FEM.  Developed by the hp-FEM " << endl;
-  cout << "   group at UNR and distributed under the GPL license.  " << endl;
-  cout << "          For details visit http://hpfem.org/.          " << endl;
-  cout << "--------------------------------------------------------" << endl;
+  /*
+  cout << "-------------------------------------------------" << endl;
+  cout << "  HIMG is an experimental image compression code " << endl;
+  cout << "     based on hp-FEM and the Hermes2D library.   " << endl;
+  cout << "    It is developed by the hp-FEM group at UNR   " << endl;
+  cout << "      and distributed under the GPL license.     " << endl;
+  cout << "       For details visit http://hpfem.org/.      " << endl;
+  cout << "-------------------------------------------------" << endl;
+  */
 
   // parse command line and print settings
   try {

@@ -43,24 +43,24 @@ void Parameters::load(InputParams& input) {
 
 void Parameters::report_settings()
 {
-  verbose("!parameters");
-  verbose(" finalization conditions");
+  verbose("!Parameters:");
+  verbose(" - Stopping criterion:");
   if (max_ndof == 0)
-    verbose("   max. DOFs: infinity");
+    verbose("     Max. ndof: infinity");
   else
-    verbose("   max. DOFs: %d", max_ndof);
-  verbose("   stop error: %g", stop_error);
+    verbose("     Max. ndof: %d", max_ndof);
+  verbose("     Sigma error: %g", stop_error);
 
-  verbose(" adaptivity parameters");
-  verbose("   convergence exponent: %g", conv_exp);
-  verbose("   threshold: %g", threshold);
-  verbose("   mesh regularity: %d", mesh_regularity);
-  verbose("   adaptivity strategy: %d", adapt_strategy);
-  verbose("   predef. candidate list: %s", get_cand_list_str(cand_list)); 
+  verbose(" - Adaptivity parameters:");
+  verbose("     Convergence exponent: %g", conv_exp);
+  verbose("     Threshold: %g", threshold);
+  verbose("     Mesh regularity: %d", mesh_regularity);
+  verbose("     Adaptivity strategy: %d", adapt_strategy);
+  verbose("     Predef. candidate list: %s", get_cand_list_str(cand_list)); 
 
-  verbose(" others");
-  verbose("   input filename: %s", image_filename.c_str());
-  verbose("   init. poly. degree on elements: %d", initial_poly_degree);
+  verbose(" - Other:");
+  verbose("     Input filename: %s", image_filename.c_str());
+  verbose("     Initial poly degree: %d", initial_poly_degree);
 }
 
 #define ERROR_CHECK(__cond, __action) if (__cond) { __action; return false; }  
