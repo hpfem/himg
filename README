@@ -1,9 +1,21 @@
 Welcome to HIMG!
-====================
+================
 
 HIMG is an experimental image compression code based on adaptive 
 higher-order finite element methods (hp-FEM). It is built upon the 
 Hermes2D library (http://hpfem.org/hermes2d).
+
+Usage
+=====
+
+First install HIMG as described below. In Linux, 
+set the PYTHONPATH variable to where your 
+_hermes_common.so library is, and then type
+
+./src/himg -i img/squares/squares.ppm (on Linux)
+
+In MSVC, use the MSVC IDE. Set the command line parameters to 
+``-i ../img/squares/squares.ppm`` and run the application HIMG.
 
 License
 =======
