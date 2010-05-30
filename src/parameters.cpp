@@ -73,17 +73,19 @@ bool Parameters::is_valid()
 #undef ERROR_CHECK
 
 void Parameters::print_legend() {
-  cout << "Basic use:" << endl;
+  cout << "Quick start:" << endl;
+  cout << "  Type './run name' where name = 'squares', 'diag', 'lena', or 'sat'." << endl;
+  cout << "Basic usage:" << endl;
   cout << "  himg -i image.ppm" << endl;
-  cout << "Supported parameters:" << endl;
-  cout << "  -i X               an input image filename. PPM required." << endl;
-  cout << "  -se X              a stop standard deviation of image values" << endl;
-  cout << "  -t X               an error threshold for adaptivity" << endl;
-  cout << "  -mdof X            a maximum number of DOFs" << endl;
-  cout << "  -strat X           an adaptivity strategy" << endl;
-  cout << "  -ipoly X           an initial polynomial degree" << endl;
-  cout << "  -mr X              a mesh regularity" << endl;
-  cout << "  -ce X              a convergence exponent" << endl;
-  cout << "  -cl X              a candidate list (HP_ANISO is the default)" << endl;
-  cout << "  -vis true          enable visualization" << endl;
+  cout << "Optional parameters:" << endl;
+  cout << "  -i X               Input image filename (PPM required)." << endl;
+  cout << "  -se X              Tolerance for standard deviation of image values (default 0.002)." << endl;
+  cout << "  -mdof X            Maximum allowed number of DOF (default infinity)." << endl;
+  cout << "  -strat X           H2D adaptive strategy (default 1)." << endl;
+  cout << "  -t X               H2D adaptivity error threshold (default 0.2)." << endl;
+  cout << "  -ipoly X           H2D initial polynomial degree (default 1)." << endl;
+  cout << "  -mr X              H2D mesh regularity (default -1)." << endl;
+  cout << "  -ce X              H2D convergence exponent (default 1.0)." << endl;
+  cout << "  -cl X              H2D refinement candidate list (default HP_ANISO)." << endl;
+  cout << "  -vis true          Enable visualization (default false)." << endl;
 }
