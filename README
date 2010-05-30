@@ -10,9 +10,13 @@ Usage
 
 First install HIMG as described below. In Linux, 
 set the PYTHONPATH variable to where your 
-_hermes_common.so library is, and then type
+_hermes_common.so library is, and then (on Linux)
+type
 
-./src/himg -i img/squares/squares.ppm (on Linux)
+./run squares
+
+In addition to "squares" you can also try "diag",
+"lena", and "sat".
 
 In MSVC, use the MSVC IDE. Set the command line parameters to 
 ``-i ../img/squares/squares.ppm`` and run the application HIMG.

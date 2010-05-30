@@ -15,6 +15,7 @@ set(DEBUG YES)
 set(RELEASE NO)
 
 set(WITH_JPEG NO)
+set(REPORT_WITH_LOGO NO)
 
 # allow to override the default values in CMake.vars
 if(EXISTS ${PROJECT_SOURCE_DIR}/CMake.vars)

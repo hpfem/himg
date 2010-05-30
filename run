@@ -1,0 +1,3 @@
+# Try "run squares", "run diag", "run lena", "run sat"
+# Run ".src/himg" for more options.
+./src/himg -i img/$1/$1.ppm -vis true 
