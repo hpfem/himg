@@ -711,7 +711,7 @@ double Image2dExtrapolated::get_pixel_extrapolated(int inx_x, int inx_y) const {
   if (safe_inx_y < 0)
     safe_inx_y = 0;
   else if (safe_inx_y >= height)
-    safe_inx_y = width - 1;
+    safe_inx_y = height - 1;
 
   //handle extrapolation
   double value_shift = 0;
