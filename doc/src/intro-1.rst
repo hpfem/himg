@@ -11,6 +11,16 @@ It is built upon the `Hermes2D library <http://hpfem.org/hermes2d>`_
 and distributed under the `GNU General Public License 
 <http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt>`_. 
 
+NOTICE
+------
+
+The Hermes library underwent substantial changes recently
+(Hermes1D/2D/3D repos unified into a single repository,
+hermes_common changed, assembling and solution procedures 
+separated, several new matrix solver packages enabled, 
+API changed). HIMG is now waiting to be updated accordingly. 
+We will get to it as soon as we can.
+
 Required Libraries
 ------------------
 

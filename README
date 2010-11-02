@@ -1,9 +1,11 @@
+================
 Welcome to HIMG!
 ================
 
 HIMG is an experimental image compression code based on adaptive 
 higher-order finite element methods (hp-FEM). It is built upon the 
 Hermes2D library (http://hpfem.org/hermes2d).
+
 
 Usage
 =====
@@ -21,6 +23,7 @@ In addition to "squares" you can also try "diag",
 In MSVC, use the MSVC IDE. Set the command line parameters to 
 ``-i ../img/squares/squares.ppm`` and run the application HIMG.
 
+
 License
 =======
 
@@ -33,6 +36,7 @@ You should have received a copy of the GNU General Public
 License along with HIMG; If not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 MA  02110-1301, USA.
+
 
 Copyright
 =========
